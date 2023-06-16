@@ -1,9 +1,12 @@
+import pandas as pd
 from flask import Response
 from flask_restful import Resource
 from flask import request, make_response
 from users.service import create_user, reset_password_email_send, login_user, reset_password
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
+# from keras.preprocessing.text import Tokenizer
+# from keras.utils import pad_sequences
+#from keras.preprocessing.sequence import pad_sequences
+
 
 class SignUpApi(Resource):
     @staticmethod
@@ -27,9 +30,11 @@ class CreateDairyApi(Resource):
         """
         max_words = 10000
         max_len = 100
-        input_data = request.get_json()
+        input_data = request.get_json()       
         tokenizer = Tokenizer(num_words=max_words)
+        X_train = pd.read_csv("../X_train.csv")
         #tokenizer.fit_on_texts(X_train)
+        tokenizer.fit_on_texts(X_train)
         texts = [input_data.get('text')]
 
         # Pra-pemrosesan teks
@@ -48,7 +53,7 @@ class CreateDairyApi(Resource):
         for i, text in enumerate(texts):
             result.text= texts
             result.prediksi= labels[i]
-            print(f"Teks: {texts}")
+            print(f"Teks: {text}")
             print(f"Prediksi: {labels[i]}")
 
         response, status = login_user(request, input_data) 
